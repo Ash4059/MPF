@@ -1,0 +1,20 @@
+{
+  "ingresess": [
+    {
+      "type": "RestIngress",
+      "config": {
+        "host": "localhost",
+        "port": "8080"
+      }
+    }
+  ],
+  "egresess": [
+    {
+      "type": "RestEgress",
+      "config": {
+        "host": "localhost",
+        "port": "8080"
+      }
+    }
+  ]
+}
