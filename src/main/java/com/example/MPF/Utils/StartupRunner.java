@@ -1,16 +1,15 @@
 package com.example.MPF.Utils;
 
 import com.example.MPF.Model.Config;
-import com.example.MPF.ModuleInterface.Egress;
-import com.example.MPF.ModuleInterface.Ingress;
-import org.springframework.boot.CommandLineRunner;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 @Component
-public class StartupRunner implements CommandLineRunner {
+public class StartupRunner {
 
     private final ConfigLoader configLoader;
 
@@ -18,8 +17,8 @@ public class StartupRunner implements CommandLineRunner {
         this.configLoader = configLoader;
     }
 
-    @Override
-    public void run(String... args) throws Exception {
+    @PostConstruct
+    public void run() throws IOException {
 
         Config config = configLoader.loadConfig(ConfigLoader.getConfigFile().getPath());
 
