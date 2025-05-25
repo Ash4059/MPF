@@ -24,7 +24,8 @@ public class UserAuthEntityService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return this.userAuthEntityRepository.findByUsername(username).get();
+        return this.userAuthEntityRepository.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("No user found with username : " + username));
     }
 
     public List<UserAuthEntity> getAllUser(){
