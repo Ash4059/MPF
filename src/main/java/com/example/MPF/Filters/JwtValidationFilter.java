@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -24,8 +26,12 @@ public class JwtValidationFilter extends OncePerRequestFilter {
         String token = extractJwtFromRequest(request);
         if(Objects.nonNull(token)){
             JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(token);
-            
+            Authentication authResult = authenticationManager.authenticate(jwtAuthenticationToken);
+            if(authResult.isAuthenticated()){
+                SecurityContextHolder.getContext().setAuthentication(authResult);
+            }
         }
+        filterChain.doFilter(request, response);
     }
 
     private String extractJwtFromRequest(HttpServletRequest request){

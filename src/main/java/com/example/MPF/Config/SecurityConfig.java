@@ -1,7 +1,9 @@
 package com.example.MPF.Config;
 
+import com.example.MPF.Filters.JwtValidationFilter;
 import com.example.MPF.Utils.JWTUtil;
 import com.example.MPF.Filters.JwtAuthenticationFilter;
+import com.example.MPF.Utils.JwtAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,9 +26,11 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    private final JWTUtil jwtUtil;
 
-    public SecurityConfig(UserDetailsService userDetailsService){
+    public SecurityConfig(UserDetailsService userDetailsService, JWTUtil jwtUtil){
         this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Bean
@@ -34,7 +38,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2B);
     }
 
-    @Bean
+
     public DaoAuthenticationProvider daoAuthenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(this.userDetailsService);
@@ -42,11 +46,16 @@ public class SecurityConfig {
         return provider;
     }
 
+    public JwtAuthenticationProvider jwtAuthenticationProvider(){
+        return new JwtAuthenticationProvider(this.userDetailsService, this.jwtUtil);
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager,
                                                    JWTUtil jwtUtil) throws Exception {
 
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtUtil);
+        JwtValidationFilter jwtValidationFilter = new JwtValidationFilter(authenticationManager);
 
         return httpSecurity
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
@@ -57,12 +66,16 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtValidationFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(){
-        return new ProviderManager(Arrays.asList(daoAuthenticationProvider()));
+        return new ProviderManager(Arrays.asList(
+                daoAuthenticationProvider(),
+                jwtAuthenticationProvider()
+        ));
     }
 
 }
