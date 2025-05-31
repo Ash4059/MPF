@@ -1,12 +1,11 @@
 package com.example.MPF.Utils;
 
-import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
-import java.util.UUID;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -18,8 +17,12 @@ public class JWTUtil {
     private final long defaultExpiryMilliseconds = 60 * 60 * 1000; // Example: 1 hour default if not passed
 
     // Inject the secret from properties
-    public JWTUtil(@Value("${jwt.secret-key}") String secretKeyString) {
-        this.key = Keys.hmacShaKeyFor(secretKeyString.getBytes());
+    public JWTUtil() {
+        SecureRandom random = new SecureRandom();
+        byte[] key = new byte[32];  // 256-bit key
+        random.nextBytes(key);
+        String encodedKey = Base64.getEncoder().encodeToString(key);
+        this.key = Keys.hmacShaKeyFor(encodedKey.getBytes());
     }
 
     public String generateToken(String username, long expiryMinute) {
