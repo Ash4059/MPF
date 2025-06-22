@@ -1,23 +1,17 @@
 package com.example.MPF.Egresess;
 
 import com.example.MPF.Model.Config;
-import com.example.MPF.Model.Message;
 import com.example.MPF.ModuleInterface.Egress;
 
-public class KafkaEgress implements Egress {
+import java.util.Objects;
+
+public class KafkaEgress extends Egress {
 
     private static KafkaEgress instance;
-    Config config;
-    private boolean initialized = false;
 
     public KafkaEgress(Config config){
         this.initialize(config);
         instance = this;
-    }
-
-    @Override
-    public void SendMessage(Message message) {
-
     }
 
     @Override
@@ -35,4 +29,9 @@ public class KafkaEgress implements Egress {
     public static KafkaEgress getInstance(){
         return instance;
     }
+
+    public static boolean isInitialized(){
+        return Objects.nonNull(instance) && instance.initialized;
+    }
+
 }

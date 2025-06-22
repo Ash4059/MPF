@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -58,6 +59,13 @@ public class SecurityConfig {
         JwtValidationFilter jwtValidationFilter = new JwtValidationFilter(authenticationManager);
 
         return httpSecurity
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                        authorizationManagerRequestMatcherRegistry.anyRequest()
+                                .access((authentication, context) -> {
+                                    boolean isPortAllowed = context.getRequest().getLocalPort() == 8080;
+                                    return new AuthorizationDecision(isPortAllowed);
+                                })
+                )
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
                                 .requestMatchers("/auth/register").permitAll()

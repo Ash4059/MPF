@@ -1,22 +1,17 @@
 package com.example.MPF.Ingresess;
 
 import com.example.MPF.Model.Config;
-import com.example.MPF.Model.Message;
 import com.example.MPF.ModuleInterface.Ingress;
 
-public class SqlIngress implements Ingress {
-    private boolean initialized = false;
+import java.util.Objects;
+
+public class SqlIngress extends Ingress {
+
     private static SqlIngress instance;
-    Config config;
 
     public SqlIngress(Config config){
         this.initialize(config);
         instance = this;
-    }
-
-    @Override
-    public Message fetch() {
-        return null;
     }
 
     @Override
@@ -34,4 +29,9 @@ public class SqlIngress implements Ingress {
     public static SqlIngress getInstance(){
         return instance;
     }
+
+    public static boolean isInitialized(){
+        return Objects.nonNull(instance) && instance.initialized;
+    }
+
 }

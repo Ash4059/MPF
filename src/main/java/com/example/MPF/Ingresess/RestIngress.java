@@ -1,15 +1,13 @@
 package com.example.MPF.Ingresess;
 
 import com.example.MPF.Model.Config;
-import com.example.MPF.Model.Message;
 import com.example.MPF.ModuleInterface.Ingress;
 
 import java.util.Objects;
 
-public class RestIngress implements Ingress {
-    private boolean initialized = false;
+public class RestIngress extends Ingress {
+
     private static RestIngress instance;
-    Config config;
 
     public RestIngress(Config config){
         this.initialize(config);
@@ -18,11 +16,6 @@ public class RestIngress implements Ingress {
 
     public static RestIngress getInstance(){
         return instance;
-    }
-
-    @Override
-    public Message fetch() {
-        return null;
     }
 
     @Override

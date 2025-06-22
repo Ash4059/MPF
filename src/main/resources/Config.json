@@ -4,7 +4,14 @@
       "type": "RestIngress",
       "config": {
         "host": "localhost",
-        "port": "8080"
+        "port": "8080",
+        "mapping": "RestEgress"
+      }
+    },
+    {
+      "type": "SqlIngress",
+      "config": {
+        "mapping": "SqlEgress"
       }
     }
   ],
@@ -13,7 +20,14 @@
       "type": "RestEgress",
       "config": {
         "host": "localhost",
-        "port": "8080"
+        "port": "8080",
+        "mapping": "SqlIngress"
+      }
+    },
+    {
+      "type": "SqlEgress",
+      "config": {
+        "mapping": ""
       }
     }
   ]

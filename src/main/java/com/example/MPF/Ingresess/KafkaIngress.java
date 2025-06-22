@@ -1,22 +1,17 @@
 package com.example.MPF.Ingresess;
 
 import com.example.MPF.Model.Config;
-import com.example.MPF.Model.Message;
 import com.example.MPF.ModuleInterface.Ingress;
 
-public class KafkaIngress implements Ingress {
-    private boolean initialized = false;
+import java.util.Objects;
+
+public class KafkaIngress extends Ingress {
+
     private static KafkaIngress instance;
-    Config config;
 
     public KafkaIngress(Config config){
         this.initialize(config);
         instance = this;
-    }
-
-    @Override
-    public Message fetch() {
-        return null;
     }
 
     @Override
@@ -33,5 +28,9 @@ public class KafkaIngress implements Ingress {
 
     public static KafkaIngress getInstance(){
         return instance;
+    }
+
+    public static boolean isInitialized(){
+        return Objects.nonNull(instance) && instance.initialized;
     }
 }

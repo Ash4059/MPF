@@ -3,8 +3,13 @@ package com.example.MPF.ModuleInterface;
 import com.example.MPF.Model.Config;
 import com.example.MPF.Model.Message;
 
-public interface Ingress {
-    Message fetch();
-    void initialize(Config config);
-    void close();
+public abstract class Ingress extends AbstractConnector {
+
+    public Message fetch(){
+        return null;
+    }
+
+    public abstract void initialize(Config config);
+
+    public abstract void close();
 }
