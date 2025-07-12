@@ -27,6 +27,11 @@ public class UserController {
         return new ResponseEntity<>(userAuthEntityService.getAllUser(),HttpStatus.OK);
     }
 
+    @PostMapping("/hello")
+    public ResponseEntity<?> printHello(){
+        return new ResponseEntity<>("Print hello", HttpStatus.OK);
+    }
+
     @PostMapping("/auth/register")
     public ResponseEntity<String> registerUser(@RequestBody UserAuthEntity userAuthEntity){
         userAuthEntity.setPassword(this.passwordEncoder.encode(userAuthEntity.getPassword()));

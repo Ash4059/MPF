@@ -1,6 +1,7 @@
 package com.example.MPF.Config;
 
 import com.example.MPF.Filters.JwtValidationFilter;
+import com.example.MPF.Filters.PortFilter;
 import com.example.MPF.Utils.JWTUtil;
 import com.example.MPF.Filters.JwtAuthenticationFilter;
 import com.example.MPF.Utils.JwtAuthenticationProvider;
@@ -9,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -52,20 +52,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager,
-                                                   JWTUtil jwtUtil) throws Exception {
+    public JwtValidationFilter jwtValidationFilter() {
+        return new JwtValidationFilter(authenticationManager());
+    }
 
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtUtil);
-        JwtValidationFilter jwtValidationFilter = new JwtValidationFilter(authenticationManager);
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(), jwtUtil);
+        JwtValidationFilter jwtValidationFilter = new JwtValidationFilter(authenticationManager());
 
         return httpSecurity
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry.anyRequest()
-                                .access((authentication, context) -> {
-                                    boolean isPortAllowed = context.getRequest().getLocalPort() == 8080;
-                                    return new AuthorizationDecision(isPortAllowed);
-                                })
-                )
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
                                 .requestMatchers("/auth/register").permitAll()
@@ -73,6 +70,7 @@ public class SecurityConfig {
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new PortFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtValidationFilter, JwtAuthenticationFilter.class)
                 .build();
